@@ -39,7 +39,10 @@ func Ping(addr string) (time.Duration, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	startTime := time.Now()
+	deadline := startTime.Add(defaultTimeOut)
+	c.SetDeadline(deadline)
 	if _, err := c.WriteTo(wb, &net.UDPAddr{IP: net.ParseIP(addr)}); err != nil {
 		return 0, err
 	}
@@ -53,6 +56,7 @@ func Ping(addr string) (time.Duration, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	duration := time.Since(startTime)
 	switch rm.Type {
 	case ipv4.ICMPTypeEchoReply:
@@ -64,3 +68,5 @@ func Ping(addr string) (time.Duration, error) {
 
 // ProtoalICMP see golang.org/x/net/internal/iana.ProtoalICMP
 const ProtoalICMP = 1
+
+const defaultTimeOut = time.Second
