@@ -5,11 +5,20 @@ I've tried to use these 2 package but find it not easy enough for most users.
 So I write my own.
 
 ## Ping in 2 Lines of Code
+simple use:
 ``` go
-// example
 import "github.com/haorenfsa/go-easyping"
 // ...
 delay, err := easyping.Ping("127.0.0.1") // delay is a time.Duration
+// ...
+```
+
+advanced:
+``` go
+import "github.com/haorenfsa/go-easyping"
+// ...
+opt := &easyping.Option{...}
+result, err := easyping.Ping(opt)
 // ...
 ```
 
