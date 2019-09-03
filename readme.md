@@ -29,5 +29,6 @@ Install and update with `go get -u github.com/haorenfsa/go-easyping`
 - ~~add timeout~~
 - ~~support host~~
 - ~~handle errors~~
-- support some options
+- ~~support some options~~
 - multiple pings with statistics
+- other icmp functions like traceroute
