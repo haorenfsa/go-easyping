@@ -18,7 +18,7 @@ advanced:
 import "github.com/haorenfsa/go-easyping"
 // ...
 opt := &easyping.Option{...}
-result, err := easyping.Ping(opt)
+result, err := easyping.AdvancedPing(opt)
 // ...
 ```
 
