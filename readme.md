@@ -72,5 +72,6 @@ above table reference: http://www.cnitblog.com/yang55xiaoguang/articles/59581.ht
 # Todo
 - ~~add timeout~~
 - ~~support host~~
-- handle errors
+- ~~handle errors~~
 - support some options
+- multiple pings with statistics
