@@ -12,10 +12,7 @@ import (
 
 // Ping send icmp to target and measures delay
 func Ping(addr string) (time.Duration, error) {
-	opt := &Options{
-		Address: addr,
-		Timeout: DefaultTimeOut,
-	}
+	opt := NewDefaultOptions(addr)
 	result, err := AdvancedPing(opt)
 	if err != nil {
 		return 0, err
@@ -24,9 +21,28 @@ func Ping(addr string) (time.Duration, error) {
 }
 
 // Options for advanced ping
+// default values, see Options.setDefault()
 type Options struct {
 	Address string
 	Timeout time.Duration
+	Data    []byte
+}
+
+// NewDefaultOptions returns a new default option by given address
+func NewDefaultOptions(Address string) *Options {
+	opt := new(Options)
+	opt.Address = Address
+	opt.setDefault()
+	return opt
+}
+
+func (o *Options) setDefault() {
+	if o.Timeout == 0 {
+		o.Timeout = time.Second
+	}
+	if o.Data == nil {
+		o.Data = []byte(`!"#$%&'()*+,-./01234567`)
+	}
 }
 
 // Result is the result of advanced ping
@@ -57,7 +73,7 @@ func AdvancedPing(opt *Options) (*Result, error) {
 		Type: ipv4.ICMPTypeEcho, Code: 0,
 		Body: &icmp.Echo{
 			ID: os.Getpid() & 0xffff, Seq: 1,
-			Data: []byte("Hi"),
+			Data: opt.Data,
 		},
 	}
 	wb, err := wm.Marshal(nil)
@@ -97,6 +113,3 @@ func AdvancedPing(opt *Options) (*Result, error) {
 
 // ProtoalICMP see golang.org/x/net/internal/iana.ProtoalICMP
 const ProtoalICMP = 1
-
-// DefaultTimeOut 1s
-const DefaultTimeOut = time.Second
