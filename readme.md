@@ -70,7 +70,7 @@ ICMP Type Code
 above table reference: http://www.cnitblog.com/yang55xiaoguang/articles/59581.html
 
 # Todo
-- add timeout
+- ~~add timeout~~
 - ~~support host~~
 - handle errors
 - support some options

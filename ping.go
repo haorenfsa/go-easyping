@@ -1,7 +1,6 @@
 package easyping
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -33,9 +32,11 @@ type Options struct {
 // Result is the result of advanced ping
 type Result struct {
 	RoundTimeDelay time.Duration
+	ReplyValid     bool
+	Reply          *icmp.Message
 }
 
-// AdvancedPing pings with options
+// AdvancedPing pings with options, return err when target not reached
 func AdvancedPing(opt *Options) (*Result, error) {
 	c, err := icmp.ListenPacket("udp4", "0.0.0.0")
 	if err != nil {
@@ -65,7 +66,7 @@ func AdvancedPing(opt *Options) (*Result, error) {
 	}
 
 	startTime := time.Now()
-	deadline := startTime.Add(DefaultTimeOut)
+	deadline := startTime.Add(opt.Timeout)
 	c.SetDeadline(deadline)
 	if _, err := c.WriteTo(wb, &net.UDPAddr{IP: net.ParseIP(addr)}); err != nil {
 		return nil, err
@@ -76,17 +77,21 @@ func AdvancedPing(opt *Options) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	rm, err := icmp.ParseMessage(ProtoalICMP, rb[:n])
-	if err != nil {
-		return nil, err
-	}
 
 	duration := time.Since(startTime)
+	res := &Result{RoundTimeDelay: duration}
+	rm, err := icmp.ParseMessage(ProtoalICMP, rb[:n])
+	if err != nil {
+		return res, err
+	}
+
 	switch rm.Type {
 	case ipv4.ICMPTypeEchoReply:
-		return &Result{RoundTimeDelay: duration}, nil
+		res.ReplyValid = true
+		res.Reply = rm
+		return res, nil
 	default:
-		return nil, errors.New("received package type err")
+		return res, fmt.Errorf("bad reply type: type %d, code %d, body %s", rm.Type, rm.Code, rm.Body)
 	}
 }
 
